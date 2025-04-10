@@ -24,42 +24,30 @@ LETTER    [a-zA-Z_]
 ID        {LETTER}({LETTER}|{DIGIT})*
 INT_NUM   {DIGIT}+
 FLOAT_NUM {DIGIT}+\.{DIGIT}+
+STRING    \"(\\.|[^"\\])*\"
+CHAR      \'(\\.|[^'\\])\'
 
 %%
 
-"if"        { print("IF_KEYWORD", yytext); }
-"else"      { print("ELSE_KEYWORD", yytext); }
-"int"       { print("TYPE_INT", yytext); }
-"float"     { print("TYPE_FLOAT", yytext); }
-"bool"      { print("TYPE_BOOL", yytext); }
-"true"      { print("BOOL_LITERAL", yytext); }
-"false"     { print("BOOL_LITERAL", yytext); }
+"auto"|"break"|"case"|"char"|"const"|"continue"|"default"|"do"|"double"|"else"|"enum"|"extern"|"float"|"for"|"goto"|"if"|"int"|"long"|"register"|"return"|"short"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"void"|"volatile"|"while"|"bool"|"true"|"false"|"printf"|"scanf" { print("KEYWORD", YYText()); }
 
-"=="        { print("COMPARE_OP", yytext); }
-"!="        { print("COMPARE_OP", yytext); }
-">="        { print("COMPARE_OP", yytext); }
-"<="        { print("COMPARE_OP", yytext); }
-">"         { print("COMPARE_OP", yytext); }
-"<"         { print("COMPARE_OP", yytext); }
+[(){}[\]\,\;:] { print("SEPARATOR", YYText()); }
 
-{ID}        { print("IDENTIFIER", yytext); }
-{INT_NUM}   { print("INT_LITERAL", yytext); }
-{FLOAT_NUM} { print("FLOAT_LITERAL", yytext); }
+"+"|"-"|"*"|"/"|"%" { print("ARITHMETIC_OP", YYText()); }
+"=="|"!="|"<"|">"|"<="|">=" { print("COMPARE_OP", YYText()); }
+"&&"|"\|\|"|"!" { print("LOGICAL_OP", YYText()); }
+"&"|"\|"|"^"|"~"|"<<"|">>" { print("BITWISE_OP", YYText()); }
+"="|"+="|"-="|"*="|"/="|"%="|"&="|"\|="|"^="|"<<="|">>=" { print("ASSIGNMENT_OP", YYText()); }
+"?"|":" { print("TERNARY_OP", YYText()); }
 
-"="         { print("ASSIGN_OP", yytext); }
-"+"         { print("ADD_OP", yytext); }
-"-"         { print("SUB_OP", yytext); }
-"*"         { print("MUL_OP", yytext); }
-"/"         { print("DIV_OP", yytext); }
-
-";"         { print("SEMICOLON", yytext); }
-"{"         { print("LBRACE", yytext); }
-"}"         { print("RBRACE", yytext); }
-"("         { print("LPAREN", yytext); }
-")"         { print("RPAREN", yytext); }
+{STRING}    { print("STRING_LITERAL", YYText()); }
+{CHAR}      { print("CHAR_LITERAL", YYText()); }
+{ID}        { print("IDENTIFIER", YYText()); }
+{INT_NUM}   { print("INT_LITERAL", YYText()); }
+{FLOAT_NUM} { print("FLOAT_LITERAL", YYText()); }
 
 [ \t\n]     ;    // Skip whitespace
-.           { print("UNKNOWN", yytext); }
+.           { print("UNKNOWN", YYText()); }
 
 %%
 
