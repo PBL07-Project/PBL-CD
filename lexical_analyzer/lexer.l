@@ -56,7 +56,7 @@ void Compiler::print(const char* type, const char* text) {
 }
 
 int main() {
-    std::ifstream in("input.cpp");
+    std::ifstream in("lexical_analyzer/input.cpp");
     Compiler lexer(&in);
     lexer.yylex();
     return 0;
