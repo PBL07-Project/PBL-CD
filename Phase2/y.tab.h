@@ -84,8 +84,7 @@ extern int yydebug;
     SUBTRACT = 285,                /* SUBTRACT  */
     UNARY = 286,                   /* UNARY  */
     INCLUDE = 287,                 /* INCLUDE  */
-    RETURN = 288,                  /* RETURN  */
-    LOWER_THAN_ELSE = 289          /* LOWER_THAN_ELSE  */
+    RETURN = 288                   /* RETURN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -125,7 +124,6 @@ extern int yydebug;
 #define UNARY 286
 #define INCLUDE 287
 #define RETURN 288
-#define LOWER_THAN_ELSE 289
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

@@ -1,9 +1,9 @@
 %{
 #include "y.tab.h"
-int countn = 0;
+extern int yylineno;
 %}
 
-%option yylineno
+%option yylineno noyywrap
 
 alpha       [a-zA-Z]
 digit       [0-9]
@@ -21,11 +21,11 @@ unary       "++"|"--"
 "for"                       { return FOR; }
 "if"                        { return IF; }
 "else"                      { return ELSE; }
-"#include"[ \t]*<.+\.h>     { return INCLUDE; }
+"#include"[ \t]*<[a-zA-Z0-9_./]+\.h>  { return INCLUDE; }
 "true"                      { return TRUE; }
 "false"                     { return FALSE; }
 [-]?{digit}+                { return NUMBER; }
-[-]?{digit}+"."{digit}{1,6} { return FLOAT_NUM; }
+[-]?{digit}+\.{digit}{1,6}  { return FLOAT_NUM; }
 {alpha}({alpha}|{digit})*   { return ID; }
 {unary}                     { return UNARY; }
 
@@ -43,15 +43,15 @@ unary       "++"|"--"
 "/"                         { return DIVIDE; }
 "*"                         { return MULTIPLY; }
 
-\/\/.*                     { /* single-line comment */ }
-\/\*([^*]|\*[^/])*\*\/     { /* multi-line comment */ }
+\/\/.*                      { /* Skip single-line comments */ }
+\/\*([^*]|\*[^/])*\*\/      { /* Skip multi-line comments */ }
 
-["][^"]*["]                 { return STR; }
-['].[']                     { return CHARACTER; }
+\"([^\"\n]|\\\")*\"         { return STR; }
+'([^'\n]|\\')'              { return CHARACTER; }
 
-[ \t]+                     { /* skip whitespace */ }
-\n                         { countn++; }
-.                          { return *yytext; }
+[ \t]+                      { /* Skip whitespace */ }
+\n                          { /* Skip newlines */ }
+.                           { return *yytext; }
+<<EOF>>                     { return 0; }
 
 %%
-int yywrap() { return 1; }

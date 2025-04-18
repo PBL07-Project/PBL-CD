@@ -3,95 +3,114 @@
 #include <stdlib.h>
 void yyerror(const char *s);
 int yylex();
+extern FILE *yyin;
+extern int yylineno;
 %}
 
 %token VOID CHARACTER PRINTFF SCANFF INT FLOAT CHAR FOR IF ELSE TRUE FALSE NUMBER FLOAT_NUM ID
 %token LE GE EQ NE GT LT AND OR STR ADD MULTIPLY DIVIDE SUBTRACT UNARY INCLUDE RETURN
 
-%nonassoc LOWER_THAN_ELSE
+%nonassoc IF
 %nonassoc ELSE
+%left OR
+%left AND
+%left EQ NE
+%left LT GT LE GE
+%left ADD SUBTRACT
+%left MULTIPLY DIVIDE
+%right UNARY
 
 %%
 
-program: headers main '(' ')' '{' bodies return_stmt '}';
+program: headers main_function;
 
-headers: headers INCLUDE
-       | INCLUDE
+headers: /* empty */
+       | headers INCLUDE
        ;
 
-main: datatype ID;
+main_function: INT ID '(' ')' '{' body return_stmt '}';
 
-datatype: INT
-        | FLOAT
-        | CHAR
-        | VOID
-        ;
-
-bodies: body
-      | bodies body
-      ;
-
-body: FOR '(' statement ';' condition ';' statement ')' '{' bodies '}'
-    | IF '(' condition ')' '{' bodies '}' %prec LOWER_THAN_ELSE
-    | IF '(' condition ')' '{' bodies '}' ELSE '{' bodies '}'
-    | statement ';'
-    | PRINTFF '(' STR ')' ';'
-    | SCANFF '(' STR ',' '&' ID ')' ';'   // ✅ & is allowed directly
+body: /* empty */
+    | body statement
     ;
 
-condition: value relop value
+statement: declaration ';'
+        | assignment ';'
+        | print_stmt ';'
+        | scan_stmt ';'
+        | for_loop
+        | if_stmt
+        ;
+
+declaration: type ID
+           | type ID '=' expression
+           ;
+
+type: INT
+     | FLOAT
+     | CHAR
+     ;
+
+assignment: ID '=' expression
+          | ID UNARY
+          | UNARY ID
+          ;
+
+expression: NUMBER
+          | FLOAT_NUM
+          | CHARACTER
+          | ID
+          | expression ADD expression
+          | expression SUBTRACT expression
+          | expression MULTIPLY expression
+          | expression DIVIDE expression
+          ;
+
+print_stmt: PRINTFF '(' STR ')';
+
+scan_stmt: SCANFF '(' STR ',' '&' ID ')';
+
+for_loop: FOR '(' assignment ';' condition ';' assignment ')' '{' body '}';
+
+if_stmt: IF '(' condition ')' '{' body '}' else_part;
+
+else_part: /* empty */
+         | ELSE '{' body '}'
+         ;
+
+condition: expression comp_op expression
          | TRUE
          | FALSE
          ;
 
-statement: datatype ID init
-         | ID '=' expression
-         | ID UNARY
-         | UNARY ID
-         ;
+comp_op: LT | GT | LE | GE | EQ | NE;
 
-init: '=' value
-    | /* empty */
-    ;
-
-expression: expression arithmetic expression
-          | value
+return_stmt: RETURN expression ';'
+          | /* empty */
           ;
-
-arithmetic: ADD
-          | SUBTRACT
-          | MULTIPLY
-          | DIVIDE
-          ;
-
-relop: LT
-     | GT
-     | LE
-     | GE
-     | EQ
-     | NE
-     ;
-
-value: NUMBER
-     | FLOAT_NUM
-     | CHARACTER
-     | ID
-     ;
-
-return_stmt: RETURN value ';'
-           | /* empty */
-           ;
 
 %%
 
-int main() {
-    if (yyparse() == 0)
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            perror("Error opening file");
+            exit(1);
+        }
+    }
+    
+    if (yyparse() == 0) {
         printf("Parsing successful ✅\n");
-    else
+    } else {
         printf("Parsing failed ❌\n");
+    }
+    
+    if (argc > 1) fclose(yyin);
     return 0;
 }
 
 void yyerror(const char *msg) {
-    fprintf(stderr, "Syntax error: %s\n", msg);
+    fprintf(stderr, "Error at line %d: %s\n", yylineno, msg);
+    exit(1);
 }

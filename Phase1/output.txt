@@ -1,0 +1,45 @@
+/* Token Listing for input.c */
+
+TOKEN TYPE       LEXEME
+---------------------------------
+INCLUDE        : #include<stdio.h>
+INT            : int
+ID             : main
+UNKNOWN        : (
+UNKNOWN        : )
+UNKNOWN        : {
+INT            : int
+ID             : a
+UNKNOWN        : =
+NUMBER         : 5
+UNKNOWN        : ;
+FLOAT          : float
+ID             : b
+UNKNOWN        : =
+FLOAT_NUM      : 2.3
+UNKNOWN        : ;
+IF             : if
+UNKNOWN        : (
+ID             : a
+LT             : <
+NUMBER         : 10
+UNKNOWN        : )
+UNKNOWN        : {
+PRINTFF        : printf
+UNKNOWN        : (
+STR            : "a is less than 10"
+UNKNOWN        : )
+UNKNOWN        : ;
+UNKNOWN        : }
+ELSE           : else
+UNKNOWN        : {
+PRINTFF        : printf
+UNKNOWN        : (
+STR            : "a is greater or equal to 10"
+UNKNOWN        : )
+UNKNOWN        : ;
+UNKNOWN        : }
+RETURN         : return
+NUMBER         : 0
+UNKNOWN        : ;
+UNKNOWN        : }
