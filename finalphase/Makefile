@@ -6,7 +6,7 @@ FLEX = flex
 INPUT = input.c
 OUTPUT = output.txt
 
-.PHONY: all clean run
+.PHONY: all clean run visualize
 
 all: compiler
 
@@ -19,8 +19,14 @@ y.tab.c: parser.y
 lex.yy.c: lexer.l
 	$(FLEX) $<
 
+
+
 run: compiler
 	./compiler < $(INPUT) > $(OUTPUT)
 
 clean:
 	rm -f compiler lex.yy.c y.tab.c y.tab.h $(OUTPUT)
+
+visualize:
+	dot -Tpng parse_tree.dot -o parse_tree.png
+	@echo "Parse tree visualization: parse_tree.png"

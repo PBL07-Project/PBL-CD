@@ -14,7 +14,6 @@
     extern int countn;
     void yyerror(const char *s);
     int yylex();
-    int yywrap();
     void add(char);
     void insert_type();
     int search(char *);
@@ -25,6 +24,8 @@
     int check_types(char *, char *);
     char *get_type(char *);
     struct node* mknode(struct node *left, struct node *right, char *token);
+    void generate_dot(FILE *fp, struct node *node);
+    void visualize_parse_tree();
 
     struct dataType {
         char * id_name;
@@ -265,21 +266,45 @@ return: RETURN { add('K'); } value ';' { check_return_type($3.name); $1.nd = mkn
 
 %%
 
+void generate_dot(FILE *fp, struct node *node) {
+    if(node == NULL) return;
+    fprintf(fp, "  \"%p\" [label=\"%s\"];\n", (void*)node, node->token);
+    if(node->left) {
+        fprintf(fp, "  \"%p\" -> \"%p\";\n", (void*)node, (void*)node->left);
+        generate_dot(fp, node->left);
+    }
+    if(node->right) {
+        fprintf(fp, "  \"%p\" -> \"%p\";\n", (void*)node, (void*)node->right);
+        generate_dot(fp, node->right);
+    }
+}
+
+void visualize_parse_tree() {
+    FILE *fp = fopen("parse_tree.dot", "w");
+    if(fp == NULL) return;
+    fprintf(fp, "digraph ParseTree {\n");
+    fprintf(fp, "  node [shape=box];\n");
+    generate_dot(fp, head);
+    fprintf(fp, "}\n");
+    fclose(fp);
+    system("dot -Tpng parse_tree.dot -o parse_tree.png");
+}
+
 int main() {
     yyparse();
+    visualize_parse_tree();
+    
     printf("\n\n\t\t\t\t\t\t\t\t PHASE 1: LEXICAL ANALYSIS \n\n");
-    // Header
-printf("\n%-20s %-10s %-15s %-7s\n", "SYMBOL", "DATATYPE", "TYPE", "LINE_NO");
-printf("--------------------------------------------------------\n");
-
-// Rows
-for(int i=0; i<count; i++) {
-    printf("%-20s %-10s %-15s %-7d\n", 
-           symbol_table[i].id_name, 
-           symbol_table[i].data_type, 
-           symbol_table[i].type, 
-           symbol_table[i].line_no);
-}
+    printf("\n%-20s %-10s %-15s %-7s\n", "SYMBOL", "DATATYPE", "TYPE", "LINE_NO");
+    printf("--------------------------------------------------------\n");
+    for(int i=0; i<count; i++) {
+        printf("%-20s %-10s %-15s %-7d\n", 
+            symbol_table[i].id_name, 
+            symbol_table[i].data_type, 
+            symbol_table[i].type, 
+            symbol_table[i].line_no
+        );
+    }
     for(int i=0;i<count;i++) {
         free(symbol_table[i].id_name);
         free(symbol_table[i].type);
