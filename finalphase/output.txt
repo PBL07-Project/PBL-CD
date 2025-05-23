@@ -8,94 +8,64 @@ SYMBOL               DATATYPE   TYPE            LINE_NO
 #include<stdio.h>               Header          0      
 #include<string.h>              Header          1      
 main                 int        Constant        3      
-a                    int        Variable        4      
-x                    int        Variable        5      
-1                    CONST      Constant        5      
-y                    int        Variable        6      
-2                    CONST      Constant        6      
-z                    int        Variable        7      
-3                    CONST      Constant        7      
-10                   CONST      Constant        9      
-5                    CONST      Constant        10     
-if                   N/A        Keyword         11     
-for                  N/A        Keyword         12     
-k                    int        Variable        12     
-0                    CONST      Constant        12     
-printf               N/A        Keyword         14     
+x                    int        Variable        4      
+1                    CONST      Constant        4      
+f                    float      Variable        5      
+a                    int        Variable        6      
+3                    CONST      Constant        6      
+5                    CONST      Constant        8      
+if                   N/A        Keyword         9      
+printf               N/A        Keyword         10     
+100                  CONST      Constant        11     
 else                 N/A        Keyword         16     
-idx                  int        Variable        17     
-i                    int        Variable        19     
-scanf                N/A        Keyword         21     
-j                    int        Variable        25     
-return               N/A        Keyword         29     
 
 
 								 PHASE 2: SYNTAX ANALYSIS 
 
-#include<stdio.h>, headers, #include<string.h>, program, a, declaration, NULL, statements, x, declaration, 1, statements, y, declaration, 2, statements, z, declaration, 3, statements, x, =, 3, statements, y, =, 10, statements, z, =, 5, statements, x, >, 5, if, k, declaration, 0, CONDITION, k, <, 10, CONDITION, k, ITERATOR, ++, for, y, =, x, +, 3, statements, printf, if-else, else, idx, declaration, 1, statements, i, declaration, 0, CONDITION, i, <, 10, CONDITION, i, ITERATOR, ++, for, printf, statements, scanf, statements, x, >, 5, if, printf, if-else, statements, j, declaration, 0, CONDITION, j, <, z, CONDITION, j, ITERATOR, ++, for, a, =, 1, main, return, RETURN, 1, 
+#include<stdio.h>, headers, #include<string.h>, program, x, declaration, 1, statements, f, declaration, NULL, statements, a, declaration, 3, statements, x, declaration, NULL, statements, a, =, x, *, 3, +, 5, statements, x, >, a, if, printf, statements, a, =, x, *, 3, +, 100, statements, x, >, a, if, printf, statements, a, =, x, *, 3, +, 100, if-else, else, x, =, a, *, 3, +, 100, if-else, else, x, =, a, *, 3, +, 100, main, 
 
 
 
 								 PHASE 3: SEMANTIC ANALYSIS 
 
-Semantic analysis completed with no errors
+Semantic analysis completed with 1 errors
+	 - Line 8: Redeclaration of "x"
+
 
 							   PHASE 4: INTERMEDIATE CODE GENERATION 
 
-a = NULL
 x = 1
-y = 2
-z = 3
-x = 3
-y = 10
-z = 5
+f = NULL
+a = 3
+x = NULL
+t0 = 3 + 5
+t1 = x * t0
+a = t1
 
-if (x > 5) GOTO L0 else GOTO L1
+if (x > a) GOTO L0 else GOTO L1
 
 LABEL L0:
-k = 0
+t2 = 3 + 100
+t3 = x * t2
+a = t3
+
+if (x > a) GOTO L2 else GOTO L3
 
 LABEL L2:
-
-if NOT (k < 10) GOTO L3
-t1 = x + 3
-y = t1
-t0 = k + 1
-k = t0
-JUMP to L2
+t4 = 3 + 100
+t5 = x * t4
+a = t5
 
 LABEL L3:
+t6 = 3 + 100
+t7 = a * t6
+x = t7
+GOTO next
 
 LABEL L1:
-idx = 1
+t8 = 3 + 100
+t9 = a * t8
+x = t9
 GOTO next
-i = 0
-
-LABEL L4:
-
-if NOT (i < 10) GOTO L5
-
-if (x > 5) GOTO L6 else GOTO L7
-
-LABEL L6:
-
-LABEL L7:
-GOTO next
-j = 0
-
-LABEL L8:
-
-if NOT (j < z) GOTO L9
-a = 1
-t3 = j + 1
-j = t3
-JUMP to L8
-
-LABEL L9:
-t3 = j + 1
-j = t3
-JUMP to L4
-
-LABEL L5:
 
 
